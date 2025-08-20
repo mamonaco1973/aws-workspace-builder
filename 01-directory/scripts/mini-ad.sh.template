@@ -331,12 +331,23 @@ Set-Content -Path "C:\gpo.log" -Value "GPO Script Ran"
 EOF
 chmod 644 "$POLICY_PATH/Machine/Scripts/Startup/test-gpo-script.ps1"
 
+# ---------------------------------------------------------------------------------
+# Step 6. Wait until GPO is queryable in LDAP before linking
+# ---------------------------------------------------------------------------------
+echo "Waiting for GPO $UUID_BRACED to show up in LDAP..."  >> /root/gpo_assign.log 2>&1
+for i in {1..30}; do
+    if samba-tool gpo show "$UUID_BRACED" >/dev/null 2>&1; then
+        echo "Confirmed: GPO $UUID_BRACED exists." >> /root/gpo_assign.log 2>&1
+        break
+    fi
+    echo "Still waiting... ($i)" >> /root/gpo_assign.log 2>&1
+    sleep 2
+done
 
 # ---------------------------------------------------------------------------------
 # Step 7. Link the GPO to the domain root
 # ---------------------------------------------------------------------------------
 echo "NOTE: Setting $UUID_BRACED on $BUILD_OU" >> /root/gpo_assign.log 2>&1
-sleep 5
 echo -e "$ADMINISTRATOR_PASS" | samba-tool gpo setlink "$BUILD_OU" "$UUID_BRACED" -U Administrator >> /root/gpo_assign.log 2>&1
 samba-tool ntacl sysvolreset
 
