@@ -306,7 +306,7 @@ objectClass: groupPolicyContainer
 cn: $UUID_BRACED
 displayName: TestStartupPS
 gPCFileSysPath: \\\\${HOSTNAME_DC}.${DNS_ZONE}\\sysvol\\${DNS_ZONE}\\Policies\\$UUID_BRACED
-versionNumber: 0
+versionNumber: 1
 flags: 0
 EOF
 
@@ -323,7 +323,7 @@ mkdir -p "$POLICY_PATH/Machine/Scripts/Startup"
 
 cat > "$POLICY_PATH/GPT.INI" <<EOF
 [General]
-Version=0
+Version=1
 EOF
 
 # ---------------------------------------------------------------------------------
