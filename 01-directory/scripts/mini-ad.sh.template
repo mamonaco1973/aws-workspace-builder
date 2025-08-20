@@ -222,7 +222,6 @@ jq -c '.users[]' "$SEED_FILE" | while read -r user; do
     UID_NUMBER=$(echo "$user" | jq -r .uidNumber)
     GID_NUMBER=$(echo "$user" | jq -r .gidNumber)
     PRIMARY_GROUP=$(echo "$user" | jq -r .primaryGroup)
-    EXTRA_GROUPS=$(echo "$user" | jq -r '.extraGroups[]?')
 
     DISPLAYNAME="$GIVENNAME $SURNAME"
     EMAIL="$USERNAME@$DNS_ZONE"
@@ -266,11 +265,90 @@ msSFU30NisDomain: $NETBIOS
 EOF
     fi
 
-    # Add extra group memberships
-    for grp in $EXTRA_GROUPS; do
+    # Add extra group memberships (safe with spaces like "Domain Admins")
+    echo "$user" | jq -r '.extraGroups[]?' | while IFS= read -r grp; do
+        echo "Adding user $USERNAME to group $grp" >> /root/ad_user_attributes.log 2>&1
         samba-tool group addmembers "$grp" "$USERNAME" >> /root/ad_user_attributes.log 2>&1
     done
 done
+
+#----------------------------------------------------------------------------------
+# Create GPO for Workspaces bootstrapping
+#----------------------------------------------------------------------------------
+
+# Build DOMAIN_DN dynamically from DNS_ZONE
+DOMAIN_DN=$(echo "$DNS_ZONE" | awk -F. '{ for (i=1; i<=NF; i++) printf "DC=%s%s", $i, (i<NF?",":"") }')
+
+# ---------------------------------------------------------------------------------
+# Step 1. Create PowerShell startup script in SYSVOL
+# ---------------------------------------------------------------------------------
+mkdir -p /var/lib/samba/sysvol/${DNS_ZONE}/scripts
+cat > /var/lib/samba/sysvol/${DNS_ZONE}/scripts/test-gpo-script.ps1 <<'EOF'
+Set-Content -Path "C:\gpo.log" -Value "GPO Script Ran"
+EOF
+chmod 644 /var/lib/samba/sysvol/${DNS_ZONE}/scripts/test-gpo-script.ps1
+
+# ---------------------------------------------------------------------------------
+# Step 2. Generate a new GUID with curly braces
+# ---------------------------------------------------------------------------------
+UUID=$(uuidgen | tr '[:lower:]' '[:upper:]')
+UUID_BRACED="{${UUID}}"
+
+echo "Creating new GPO with GUID $UUID_BRACED"
+
+# ---------------------------------------------------------------------------------
+# Step 3. Write LDIF for AD object
+# ---------------------------------------------------------------------------------
+cat > /tmp/gpo.ldif <<EOF
+dn: CN=$UUID_BRACED,CN=Policies,CN=System,$DOMAIN_DN
+objectClass: top
+objectClass: groupPolicyContainer
+cn: $UUID_BRACED
+displayName: TestStartupPS
+gPCFileSysPath: \\\\${HOSTNAME_DC}.${DNS_ZONE}\\sysvol\\${DNS_ZONE}\\Policies\\$UUID_BRACED
+versionNumber: 0
+flags: 0
+EOF
+
+# ---------------------------------------------------------------------------------
+# Step 4. Add GPO object to AD
+# ---------------------------------------------------------------------------------
+ldbadd -H /var/lib/samba/private/sam.ldb /tmp/gpo.ldif
+
+# ---------------------------------------------------------------------------------
+# Step 5. Seed SYSVOL folder for this GPO
+# ---------------------------------------------------------------------------------
+POLICY_PATH="/var/lib/samba/sysvol/${DNS_ZONE}/Policies/$UUID_BRACED"
+mkdir -p "$POLICY_PATH/Machine/Scripts/Startup"
+
+cat > "$POLICY_PATH/GPT.INI" <<EOF
+[General]
+Version=0
+EOF
+
+# ---------------------------------------------------------------------------------
+# Step 6. Configure PowerShell Startup Script (psscripts.ini)
+# ---------------------------------------------------------------------------------
+cat > "$POLICY_PATH/Machine/Scripts/Startup/psscripts.ini" <<EOF
+[Startup]
+0CmdLine=test-gpo-script.ps1
+0Parameters=
+EOF
+
+# ---------------------------------------------------------------------------------
+# Step 7. Link the GPO to the domain root
+# ---------------------------------------------------------------------------------
+echo -e "$ADMINISTRATOR_PASS" | samba-tool gpo setlink "$DOMAIN_DN" "$UUID_BRACED" -U Administrator >> /root/gpo_assign.log 2>&1 
+
+{
+echo "====================================================================="
+echo "GPO created and linked successfully!"
+echo "GUID        : $UUID_BRACED"
+echo "DisplayName : TestStartupPS"
+echo "SYSVOL path : $POLICY_PATH"
+echo "Linked to   : $DOMAIN_DN"
+echo "====================================================================="
+} >> "$SECRETS_FILE"
 
 #--------------------------------------------------------------------
 # Reboot to ensure all changes are applied cleanly
