@@ -33,7 +33,7 @@ resource "aws_internet_gateway" "ad-igw" {
 resource "aws_subnet" "vm-subnet-1" {
   vpc_id                  = aws_vpc.ad-vpc.id
   cidr_block              = "10.0.0.64/26" # ~62 usable IPs
-  map_public_ip_on_launch = true            # Auto-assign public IPv4
+  map_public_ip_on_launch = true           # Auto-assign public IPv4
   availability_zone_id    = "use1-az6"
 
   tags = { Name = "vm-subnet-1" }

@@ -101,10 +101,10 @@ resource "aws_vpc_dhcp_options_association" "mini_ad_dns_assoc" {
 # -------------------------------------------------------------------
 locals {
   users_json = templatefile("./scripts/users.json.template", {
-    USER_BASE_DN    = var.user_base_dn                       # User base DN for LDAP
-    DNS_ZONE        = var.dns_zone                           # DNS zone (e.g., mcloud.mikecloud.com)
-    REALM           = var.realm                              # Kerberos realm
-    NETBIOS         = var.netbios                            # NetBIOS name
+    USER_BASE_DN      = var.user_base_dn                      # User base DN for LDAP
+    DNS_ZONE          = var.dns_zone                          # DNS zone (e.g., mcloud.mikecloud.com)
+    REALM             = var.realm                             # Kerberos realm
+    NETBIOS           = var.netbios                           # NetBIOS name
     sysadmin_password = random_password.admin_password.result # Insert sysadmin's random password
 
   })
