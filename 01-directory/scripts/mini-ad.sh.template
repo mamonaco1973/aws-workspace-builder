@@ -280,24 +280,13 @@ done
 DOMAIN_DN=$(echo "$DNS_ZONE" | awk -F. '{ for (i=1; i<=NF; i++) printf "DC=%s%s", $i, (i<NF?",":"") }')
 
 # ---------------------------------------------------------------------------------
-# Step 1. Create PowerShell startup script in SYSVOL
-# ---------------------------------------------------------------------------------
-mkdir -p /var/lib/samba/sysvol/${DNS_ZONE}/scripts
-cat > /var/lib/samba/sysvol/${DNS_ZONE}/scripts/test-gpo-script.ps1 <<'EOF'
-Set-Content -Path "C:\gpo.log" -Value "GPO Script Ran"
-EOF
-chmod 644 /var/lib/samba/sysvol/${DNS_ZONE}/scripts/test-gpo-script.ps1
-
-# ---------------------------------------------------------------------------------
-# Step 2. Generate a new GUID with curly braces
+# Step 1. Generate a new GUID with curly braces
 # ---------------------------------------------------------------------------------
 UUID=$(uuidgen | tr '[:lower:]' '[:upper:]')
 UUID_BRACED="{$${UUID}}"
 
-echo "Creating new GPO with GUID $UUID_BRACED"
-
 # ---------------------------------------------------------------------------------
-# Step 3. Write LDIF for AD object
+# Step 2. Write LDIF for AD object
 # ---------------------------------------------------------------------------------
 cat > /tmp/gpo.ldif <<EOF
 dn: CN=$UUID_BRACED,CN=Policies,CN=System,$DOMAIN_DN
@@ -311,12 +300,12 @@ flags: 0
 EOF
 
 # ---------------------------------------------------------------------------------
-# Step 4. Add GPO object to AD
+# Step 3. Add GPO object to AD
 # ---------------------------------------------------------------------------------
 ldbadd -H /var/lib/samba/private/sam.ldb /tmp/gpo.ldif
 
 # ---------------------------------------------------------------------------------
-# Step 5. Seed SYSVOL folder for this GPO
+# Step 4. Seed SYSVOL folder for this GPO
 # ---------------------------------------------------------------------------------
 POLICY_PATH="/var/lib/samba/sysvol/${DNS_ZONE}/Policies/$UUID_BRACED"
 mkdir -p "$POLICY_PATH/Machine/Scripts/Startup"
@@ -327,7 +316,7 @@ Version=1
 EOF
 
 # ---------------------------------------------------------------------------------
-# Step 6. Configure PowerShell Startup Script (psscripts.ini)
+# Step 5. Configure PowerShell Startup Script
 # ---------------------------------------------------------------------------------
 cat > "$POLICY_PATH/Machine/Scripts/Startup/psscripts.ini" <<EOF
 [Startup]
@@ -335,10 +324,19 @@ cat > "$POLICY_PATH/Machine/Scripts/Startup/psscripts.ini" <<EOF
 0Parameters=
 EOF
 
+cat > "$POLICY_PATH/Machine/Scripts/Startup/test-gpo-script.ps1" <<'EOF'
+Set-Content -Path "C:\gpo.log" -Value "GPO Script Ran"
+EOF
+chmod 644 "$POLICY_PATH/Machine/Scripts/Startup/test-gpo-script.ps1"
+
+
 # ---------------------------------------------------------------------------------
 # Step 7. Link the GPO to the domain root
 # ---------------------------------------------------------------------------------
-echo -e "$ADMINISTRATOR_PASS" | samba-tool gpo setlink "$DOMAIN_DN" "$UUID_BRACED" -U Administrator >> /root/gpo_assign.log 2>&1 
+echo "NOTE: Setting $UUID_BRACED on $DOMAIN_DN" >> /root/gpo_assign.log 2>&1
+sleep 5
+echo -e "$ADMINISTRATOR_PASS" | samba-tool gpo setlink "$DOMAIN_DN" "$UUID_BRACED" -U Administrator >> /root/gpo_assign.log 2>&1
+samba-tool ntacl sysvolreset
 
 {
 echo "====================================================================="
