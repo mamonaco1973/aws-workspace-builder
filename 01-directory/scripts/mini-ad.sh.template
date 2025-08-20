@@ -292,7 +292,7 @@ chmod 644 /var/lib/samba/sysvol/${DNS_ZONE}/scripts/test-gpo-script.ps1
 # Step 2. Generate a new GUID with curly braces
 # ---------------------------------------------------------------------------------
 UUID=$(uuidgen | tr '[:lower:]' '[:upper:]')
-UUID_BRACED="{\$${UUID}}"
+UUID_BRACED="{$${UUID}}"
 
 echo "Creating new GPO with GUID $UUID_BRACED"
 
