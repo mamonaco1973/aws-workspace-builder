@@ -278,6 +278,8 @@ done
 
 # Build DOMAIN_DN dynamically from DNS_ZONE
 DOMAIN_DN=$(echo "$DNS_ZONE" | awk -F. '{ for (i=1; i<=NF; i++) printf "DC=%s%s", $i, (i<NF?",":"") }')
+BUILD_OU="OU=Build_Workspaces,$DOMAIN_DN"
+samba-tool ou create "$BUILD_OU"
 
 # ---------------------------------------------------------------------------------
 # Step 1. Generate a new GUID with curly braces
@@ -333,9 +335,9 @@ chmod 644 "$POLICY_PATH/Machine/Scripts/Startup/test-gpo-script.ps1"
 # ---------------------------------------------------------------------------------
 # Step 7. Link the GPO to the domain root
 # ---------------------------------------------------------------------------------
-echo "NOTE: Setting $UUID_BRACED on $DOMAIN_DN" >> /root/gpo_assign.log 2>&1
+echo "NOTE: Setting $UUID_BRACED on $BUILD_OU" >> /root/gpo_assign.log 2>&1
 sleep 5
-echo -e "$ADMINISTRATOR_PASS" | samba-tool gpo setlink "$DOMAIN_DN" "$UUID_BRACED" -U Administrator >> /root/gpo_assign.log 2>&1
+echo -e "$ADMINISTRATOR_PASS" | samba-tool gpo setlink "$BUILD_OU" "$UUID_BRACED" -U Administrator >> /root/gpo_assign.log 2>&1
 samba-tool ntacl sysvolreset
 
 {
@@ -344,7 +346,7 @@ echo "GPO created and linked successfully!"
 echo "GUID        : $UUID_BRACED"
 echo "DisplayName : TestStartupPS"
 echo "SYSVOL path : $POLICY_PATH"
-echo "Linked to   : $DOMAIN_DN"
+echo "Linked to   : $BUILD_OU"
 echo "====================================================================="
 } >> "$SECRETS_FILE"
 
