@@ -334,13 +334,13 @@ chmod 644 "$POLICY_PATH/Machine/Scripts/Startup/test-gpo-script.ps1"
 # ---------------------------------------------------------------------------------
 # Step 6. Wait until GPO is queryable in LDAP before linking
 # ---------------------------------------------------------------------------------
-echo "Waiting for GPO $UUID_BRACED to show up in LDAP..."  >> /root/gpo_assign.log 2>&1
+echo "NOTE: Waiting for GPO $UUID_BRACED to show up in LDAP..."  >> /root/gpo_assign.log 2>&1
 for i in {1..30}; do
     if samba-tool gpo show "$UUID_BRACED" >/dev/null 2>&1; then
-        echo "Confirmed: GPO $UUID_BRACED exists." >> /root/gpo_assign.log 2>&1
+        echo "NOTE: Confirmed: GPO $UUID_BRACED exists." >> /root/gpo_assign.log 2>&1
         break
     fi
-    echo "Still waiting... ($i)" >> /root/gpo_assign.log 2>&1
+    echo "WARNING: Still waiting... ($i)" >> /root/gpo_assign.log 2>&1
     sleep 2
 done
 
