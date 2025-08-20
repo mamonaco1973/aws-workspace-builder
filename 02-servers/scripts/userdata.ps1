@@ -63,6 +63,7 @@ for ($i=1; $i -le $maxRetries; $i++) {
 # ------------------------------------------------------------
 
 # Reboot the server to finalize the domain join and group policies
+gpupdate /force
 shutdown /r /t 5 /c "Initial EC2 reboot to join domain" /f /d p:4:1
 
 </powershell>
