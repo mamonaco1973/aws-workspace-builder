@@ -39,26 +39,6 @@ $cred = New-Object -TypeName System.Management.Automation.PSCredential -Argument
 Add-Computer -DomainName "${domain_fqdn}" -Credential $cred -Force 
 
 # ------------------------------------------------------------
-# Grant RDP Access to All Users in "mcloud-users" Group
-# ------------------------------------------------------------
-
-Write-Output "Add users to the Remote Desktop Users Group"
-$domainGroup = "MCLOUD\mcloud-users"
-$maxRetries = 10
-$retryDelay = 30
-
-for ($i=1; $i -le $maxRetries; $i++) {
-    try {
-        Add-LocalGroupMember -Group "Remote Desktop Users" -Member $domainGroup -ErrorAction Stop
-        Write-Output "SUCCESS: Added $domainGroup to Remote Desktop Users"
-        break
-    } catch {
-        Write-Output "WARN: Attempt $i failed - waiting $retryDelay seconds..."
-        Start-Sleep -Seconds $retryDelay
-    }
-}
-
-# ------------------------------------------------------------
 # Final Reboot to Apply Changes
 # ------------------------------------------------------------
 

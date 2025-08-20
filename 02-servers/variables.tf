@@ -12,7 +12,7 @@
 variable "dns_zone" {
   description = "AD DNS zone / domain (e.g., mcloud.mikecloud.com)"
   type        = string
-  default     = "mcloud.mikecloud.com"
+  default     = "wbuilder.workspaces.com"
 }
 
 # --------------------------------------------------------------------------------
@@ -22,7 +22,7 @@ variable "dns_zone" {
 variable "realm" {
   description = "Kerberos realm (usually DNS zone in UPPERCASE, e.g., MCLOUD.MIKECLOUD.COM)"
   type        = string
-  default     = "MCLOUD.MIKECLOUD.COM"
+  default     = "WBUILDER.WORKSPACES.COM"
 }
 
 # --------------------------------------------------------------------------------
@@ -30,7 +30,18 @@ variable "realm" {
 # Typically <= 15 characters, uppercase alphanumerics; used by legacy clients and some SMB flows
 # --------------------------------------------------------------------------------
 variable "netbios" {
-  description = "NetBIOS short domain name (e.g., MCLOUD)"
+  description = "NetBIOS short domain name (e.g., WBUILDER)"
   type        = string
-  default     = "MCLOUD"
+  default     = "WBUILDER"
 }
+
+# --------------------------------------------------------------------------------
+# User base DN for LDAP
+# --------------------------------------------------------------------------------
+
+variable "user_base_dn" {
+  description = "User base DN for LDAP (e.g., CN=Users,DC=wbuilder,DC=workspaces,DC=com)"
+  type        = string
+  default     = "CN=Users,DC=wbuilder,DC=workspaces,DC=com"
+}
+
