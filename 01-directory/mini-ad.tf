@@ -105,10 +105,8 @@ locals {
     DNS_ZONE        = var.dns_zone                           # DNS zone (e.g., mcloud.mikecloud.com)
     REALM           = var.realm                              # Kerberos realm
     NETBIOS         = var.netbios                            # NetBIOS name
-    jsmith_password = random_password.jsmith_password.result # Insert John Smith's random password
-    edavis_password = random_password.edavis_password.result # Insert Emily Davis's random password
-    rpatel_password = random_password.rpatel_password.result # Insert Raj Patel's random password
-    akumar_password = random_password.akumar_password.result # Insert Amit Kumar's random password
+    sysadmin_password = random_password.ad_admin_password.result # Insert John Smith's random password
+
   })
 }
 
