@@ -320,12 +320,14 @@ EOF
 # ---------------------------------------------------------------------------------
 # Step 5. Configure PowerShell Startup Script
 # ---------------------------------------------------------------------------------
-cat > "$POLICY_PATH/Machine/Scripts/Startup/psscripts.ini" <<EOF
+# psscripts.ini must be in Machine\Scripts (NOT inside Startup)
+cat > "$POLICY_PATH/Machine/Scripts/psscripts.ini" <<EOF
 [Startup]
 0CmdLine=test-gpo-script.ps1
 0Parameters=
 EOF
 
+# Actual PowerShell script goes in Machine\Scripts\Startup
 cat > "$POLICY_PATH/Machine/Scripts/Startup/test-gpo-script.ps1" <<'EOF'
 Set-Content -Path "C:\gpo.log" -Value "GPO Script Ran"
 EOF
