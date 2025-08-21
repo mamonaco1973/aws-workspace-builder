@@ -299,14 +299,12 @@ displayName: TestStartupPS
 gPCFileSysPath: \\\\${HOSTNAME_DC}.${DNS_ZONE}\\sysvol\\${DNS_ZONE}\\Policies\\$UUID_BRACED
 versionNumber: 1
 flags: 0
-gPCMachineExtensionNames: [{42B5FAAE-6536-11d2-AE5A-0000F87571E3}{00000000-0000-0000-0000-000000000000}]
-gPCMachineExtensionNames: [{B087BE9D-ED37-454f-AF9C-04291E351182}{00000000-0000-0000-0000-000000000000}]
 EOF
 
 # ---------------------------------------------------------------------------------
 # Step 3. Add GPO object to AD
 # ---------------------------------------------------------------------------------
-ldbadd -H /var/lib/samba/private/sam.ldb /tmp/gpo.ldif
+ldbadd -H /var/lib/samba/private/sam.ldb /tmp/gpo.ldif >> /root/gpo_assign.log 2>&1
 
 # ---------------------------------------------------------------------------------
 # Step 4. Seed SYSVOL folder for this GPO
