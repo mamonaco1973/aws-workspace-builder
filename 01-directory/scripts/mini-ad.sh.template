@@ -312,6 +312,8 @@ ldbadd -H /var/lib/samba/private/sam.ldb /tmp/gpo.ldif >> /root/gpo_assign.log 2
 # ---------------------------------------------------------------------------------
 POLICY_PATH="/var/lib/samba/sysvol/${DNS_ZONE}/Policies/$UUID_BRACED"
 mkdir -p "$POLICY_PATH/Machine/Scripts/Startup"
+mkdir -p "$POLICY_PATH/Machine/Scripts/Shutdown"
+mkdir -p "$POLICY_PATH/User"
 
 cat > "$POLICY_PATH/GPT.INI" <<EOF
 [General]
@@ -327,6 +329,8 @@ cat > "$POLICY_PATH/Machine/Scripts/psscripts.ini" <<EOF
 0CmdLine=test-gpo-script.ps1
 0Parameters=
 EOF
+
+touch "$POLICY_PATH/Machine/Scripts/scripts.ini"
 
 # Actual PowerShell script goes in Machine\Scripts\Startup
 cat > "$POLICY_PATH/Machine/Scripts/Startup/test-gpo-script.ps1" <<'EOF'
