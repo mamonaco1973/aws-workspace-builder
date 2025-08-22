@@ -45,7 +45,7 @@ fi
 # --------------------------------------------------------------------------------------------------
 # Phase 2: Destroy workspace instance
 # --------------------------------------------------------------------------------------------------
-echo "NOTE: Destroying EC2 workspace instance..."
+echo "NOTE: Destroying Workspace Instance..."
 cd 02-workspace || { echo "ERROR: Directory 02-workspace not found"; exit 1; }
 
 terraform init   # Re-initialize Terraform to ensure backend and providers are available

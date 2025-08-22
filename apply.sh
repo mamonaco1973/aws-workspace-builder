@@ -43,7 +43,7 @@ echo "NOTE: Building Active Directory instance..."
 cd 01-directory || { echo "ERROR: Directory 01-directory not found"; exit 1; }
 
 terraform init
-terraform apply -auto-approve
+terraform apply -auto-approve  -refresh-interval=30s
 
 cd .. || exit
 
@@ -54,7 +54,7 @@ echo "NOTE: Building Workspace..."
 cd 02-workspace || { echo "ERROR: Directory 02-workspace not found"; exit 1; }
 
 terraform init
-terraform apply -auto-approve
+terraform apply -auto-approve  -refresh-interval=30s
 
 cd .. || exit
 
