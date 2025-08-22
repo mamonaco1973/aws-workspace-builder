@@ -4,13 +4,26 @@
   "mainSteps": [
     {
       "action": "aws:runPowerShellScript",
-      "name": "InstallChrome",
+      "name": "WBUILDER_InstallChrome",
       "inputs": {
         "runCommand": [
-          "Write-Output 'Starting Chrome installation...'", 
-          "Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/standalonesetup64.exe' -OutFile 'C:\\Temp\\chrome_installer.exe'", 
-          "Start-Process 'C:\\Temp\\chrome_installer.exe' -ArgumentList '/silent','/install' -Wait", 
-          "Write-Output 'Chrome installation completed.'"
+          "$LocalTempDir   = $env:TEMP",
+          "$ChromeInstaller = \"chrome_installer.msi\"",
+          "$DownloadUrl = 'https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi'",
+          "",
+          "# Disable progress bar for faster/silent download",
+          "$ProgressPreference = 'SilentlyContinue'",
+          "",
+          "Write-Output \"Downloading Chrome MSI...\"",
+          "Invoke-WebRequest -Uri $DownloadUrl -OutFile \"$LocalTempDir\\$ChromeInstaller\" -UseBasicParsing",
+          "",
+          "Write-Output \"Installing Chrome silently...\"",
+          "Start-Process msiexec.exe -ArgumentList \"/i `\"$LocalTempDir\\$ChromeInstaller`\" /qn /norestart\" -Wait",
+          "",
+          "Write-Output \"Cleaning up installer...\"",
+          "Remove-Item \"$LocalTempDir\\$ChromeInstaller\" -Force -ErrorAction SilentlyContinue",
+          "",
+          "Write-Output \"Chrome installation complete.\""
         ]
       }
     }
