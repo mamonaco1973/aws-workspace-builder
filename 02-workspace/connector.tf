@@ -38,19 +38,19 @@ locals {
 # AD Connector
 # -----------------------------------------------------------------------------
 resource "aws_directory_service_directory" "mini_ad_connector" {
-  name     = "${var.dns_zone}"                # must match your Samba AD DNS zone
-  password = local.admin_secret.password      # pulled from Secrets Manager in prod
-  size     = "Small"
-  type     = "ADConnector"
-  short_name  = var.netbios 
+  name       = var.dns_zone                # must match your Samba AD DNS zone
+  password   = local.admin_secret.password # pulled from Secrets Manager in prod
+  size       = "Small"
+  type       = "ADConnector"
+  short_name = var.netbios
 
   connect_settings {
     customer_dns_ips  = [data.aws_instance.mini_ad_dc.private_ip] # your Samba DC IP
     customer_username = "Admin"                                   # or Admin user you set up
-    subnet_ids        = [
+    subnet_ids = [
       data.aws_subnet.vm_subnet_1.id,
       data.aws_subnet.vm_subnet_2.id
-    ] 
-    vpc_id            = data.aws_vpc.ad_vpc.id
+    ]
+    vpc_id = data.aws_vpc.ad_vpc.id
   }
 }
