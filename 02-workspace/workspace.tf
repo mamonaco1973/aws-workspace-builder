@@ -2,7 +2,7 @@
 # IAM Role for WorkSpaces Service
 # ----------------------------------
 resource "aws_iam_role" "workspaces_default" {
-  name = "workspaces_DefaultRole"  # IAM Role name assigned to WorkSpaces
+  name = "workspaces_DefaultRole_${var.netbios}"  # IAM Role name assigned to WorkSpaces
 
   # Trust policy: allows AWS WorkSpaces to assume this role
   assume_role_policy = jsonencode({
