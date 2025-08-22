@@ -290,7 +290,7 @@ dn: CN=$UUID_BRACED,CN=Policies,CN=System,$DOMAIN_DN
 objectClass: top
 objectClass: groupPolicyContainer
 cn: $UUID_BRACED
-displayName: TestStartupPS
+displayName: SSM-Bootstrap-Script
 gPCFileSysPath: \\\\${DNS_ZONE}\\sysvol\\${DNS_ZONE}\\Policies\\$UUID_BRACED
 versionNumber: 2
 flags: 0
@@ -372,7 +372,7 @@ samba-tool ntacl sysvolreset
 echo "====================================================================="
 echo "GPO created and linked successfully!"
 echo "GUID        : $UUID_BRACED"
-echo "DisplayName : TestStartupPS"
+echo "DisplayName : SSM-Bootstrap-Script"
 echo "SYSVOL path : $POLICY_PATH"
 echo "Linked to   : $BUILD_OU"
 echo "====================================================================="
