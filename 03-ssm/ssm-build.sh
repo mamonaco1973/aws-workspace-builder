@@ -26,3 +26,4 @@ if [[ -z "$MI_ID" ]]; then
   exit 1
 fi
 
+./ssm-execute.sh "$MI_ID" "chrome.json" 
