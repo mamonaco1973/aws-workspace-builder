@@ -29,4 +29,8 @@ fi
 
 echo "NOTE: Using Managed Instance ID: $MI_ID"
 
+# Finally build and execute the SSM documents
+
+set -e
 ./ssm-execute.sh "$MI_ID" "chrome.json" 
+./ssm-execute.sh "$MI_ID" "npp.json"
