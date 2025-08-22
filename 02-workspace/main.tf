@@ -49,4 +49,3 @@ data "aws_ami" "windows_ami" {
     values = ["Windows_Server-2022-English-Full-Base-*"] # Match Windows Server 2022 AMI
   }
 }
-
