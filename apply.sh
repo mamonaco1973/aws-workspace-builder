@@ -68,5 +68,6 @@ cd .. || exit
 # Phase 4: Run installs on activate workspace
 # --------------------------------------------------------------------------------------------------
 cd 03-ssm || { echo "ERROR: Directory 03-ssm not found"; exit 1; }
-./ssm-build.sh
+#./ssm-build.sh
+cd ..
 
