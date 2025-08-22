@@ -47,6 +47,7 @@ aws ssm create-document \
   --region us-east-1 2>/dev/null || \
 aws ssm update-document \
   --name "$DOC_NAME" \
+   --document-version '$LATEST' \
   --content "file://$(pwd)/documents/$SSM_JSON" \
   --region us-east-1
 
