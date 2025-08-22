@@ -38,8 +38,8 @@ locals {
 # AD Connector
 # -----------------------------------------------------------------------------
 resource "aws_directory_service_directory" "mini_ad_connector" {
-  name     = "${upper(var.netbios)}.local"     # must match your Samba AD DNS zone
-  password = local.admin_secret.password       # pulled from Secrets Manager in prod
+  name     = "${var.dns_zone}"                # must match your Samba AD DNS zone
+  password = local.admin_secret.password      # pulled from Secrets Manager in prod
   size     = "Small"
   type     = "ADConnector"
 
@@ -49,7 +49,7 @@ resource "aws_directory_service_directory" "mini_ad_connector" {
     subnet_ids        = [
       data.aws_subnet.vm_subnet_1.id,
       data.aws_subnet.vm_subnet_2.id
-    ] # must be two different AZs
+    ] 
     vpc_id            = data.aws_vpc.ad_vpc.id
   }
 }
