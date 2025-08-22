@@ -26,4 +26,7 @@ if [[ -z "$MI_ID" ]]; then
   exit 1
 fi
 
+
+echo "NOTE: Using Managed Instance ID: $MI_ID"
+
 ./ssm-execute.sh "$MI_ID" "chrome.json" 
