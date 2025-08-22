@@ -40,12 +40,12 @@ data "aws_vpc" "ad_vpc" {
 # Fetch the most recent Windows Server 2022 AMI provided by AWS
 # This ensures we deploy the latest Windows Server OS image
 
-data "aws_ami" "windows_ami" {
-  most_recent = true       # Fetch the latest Windows Server AMI
-  owners      = ["amazon"] # AWS official account for Windows AMIs
+# data "aws_ami" "windows_ami" {
+#   most_recent = true       # Fetch the latest Windows Server AMI
+#   owners      = ["amazon"] # AWS official account for Windows AMIs
 
-  filter {
-    name   = "name"                                      # Filter AMIs by name pattern
-    values = ["Windows_Server-2022-English-Full-Base-*"] # Match Windows Server 2022 AMI
-  }
-}
+#   filter {
+#     name   = "name"                                      # Filter AMIs by name pattern
+#     values = ["Windows_Server-2022-English-Full-Base-*"] # Match Windows Server 2022 AMI
+#   }
+# }
