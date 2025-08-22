@@ -42,6 +42,7 @@ resource "aws_directory_service_directory" "mini_ad_connector" {
   password = local.admin_secret.password      # pulled from Secrets Manager in prod
   size     = "Small"
   type     = "ADConnector"
+  short_name  = var.netbios 
 
   connect_settings {
     customer_dns_ips  = [data.aws_instance.mini_ad_dc.private_ip] # your Samba DC IP
