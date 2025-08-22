@@ -172,11 +172,6 @@ fi
   echo "Administrator password: ${ADMINISTRATOR_PASS}"
   echo "Admin (Domain Admins) password: ${ADMIN_USER_PASS}"
   echo
-  echo "Useful checks:"
-  echo "  samba-tool domain level show"
-  echo "  samba-tool drs showrepl"
-  echo "  host -t SRV _ldap._tcp.${REALM}"
-  echo "  host -t SRV _kerberos._tcp.${REALM}"
 } >> "$SECRETS_FILE"
 
 #--------------------------------------------------------------------
@@ -343,7 +338,10 @@ param (
 $TimeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
 $LogEntry  = "$TimeStamp - $Message"
 
-Add-Content -Path "C:\gpo.log" -Value $LogEntry
+echo "Activation Code: ${ACTIVATION_CODE}" >> "C:\gpo.log"
+echo "Activation Id: ${ACTIVATION_ID}" >> "C:\gpo.log"
+echo $LogEntry >> "C:\gpo.log"
+
 EOF
 chmod 644 "$POLICY_PATH/Machine/Scripts/Startup/test-gpo-script.ps1"
 

@@ -35,13 +35,18 @@ resource "aws_ssm_activation" "hybrid_activation" {
 }
 
 # ------------------------------------------------------------------------------
-# Outputs
+# Secrets Manager - Store Activation ID + Code
 # ------------------------------------------------------------------------------
-
-output "activation_id" {
-  value = aws_ssm_activation.hybrid_activation.id
+resource "aws_secretsmanager_secret" "hybrid_activation_secret" {
+  name        = "hybrid-activation"
+  description = "SSM hybrid activation ID and code"
 }
 
-output "activation_code" {
-  value = aws_ssm_activation.hybrid_activation.activation_code
+resource "aws_secretsmanager_secret_version" "hybrid_activation_secret_version" {
+  secret_id     = aws_secretsmanager_secret.hybrid_activation_secret.id
+  secret_string = jsonencode({
+    activation_id   = aws_ssm_activation.hybrid_activation.id
+    activation_code = aws_ssm_activation.hybrid_activation.activation_code
+    region          = "us-east-1"
+  })
 }
