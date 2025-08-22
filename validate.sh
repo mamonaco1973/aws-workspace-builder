@@ -12,4 +12,4 @@ regcode=$(aws workspaces describe-workspace-directories \
 # Step 2: Output Registration Code and URL
 # --------------------------------------------
 echo "NOTE: Workspaces Registration Code is '$regcode'"
-echo "NOTE: Workspace web client url is 'https://us-east-1.webclient.amazonworkspaces.com/login'"
+
