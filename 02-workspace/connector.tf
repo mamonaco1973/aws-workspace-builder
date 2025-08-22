@@ -24,11 +24,6 @@ data "aws_instance" "mini_ad_dc" {
 # Data block to retrieve AD Admin credentials from Secrets Manager
 # ==============================================================================
 
-# Lookup the secret by name (must match creation phase)
-data "aws_secretsmanager_secret" "admin_secret" {
-  name = "admin_ad_credentials"
-}
-
 # Get the latest version of the secret value
 data "aws_secretsmanager_secret_version" "admin_secret_version" {
   secret_id = data.aws_secretsmanager_secret.admin_secret.id
