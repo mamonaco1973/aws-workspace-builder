@@ -36,6 +36,7 @@ echo "NOTE: Deleting AD-related AWS secrets and parameters..."
 # Force delete secrets (no recovery period)
 
 aws secretsmanager delete-secret --secret-id "admin_ad_credentials" --force-delete-without-recovery
+aws secretsmanager delete-secret --secret-id "hybrid-validation" --force-delete-without-recovery
 
 # Destroy AD instance via Terraform
 echo "NOTE: Destroying AD instance..."
