@@ -65,9 +65,8 @@ cd .. || exit
 ./ssm-wait.sh
 
 # --------------------------------------------------------------------------------------------------
-# Build Validation
+# Phase 4: Run installs on activate workspace
 # --------------------------------------------------------------------------------------------------
-echo "NOTE: Running build validation..."
-./validate.sh
+cd 03-ssm || { echo "ERROR: Directory 03-ssm not found"; exit 1; }
+./ssm-build.sh
 
-echo "NOTE: Infrastructure build complete."
