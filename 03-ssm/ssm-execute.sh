@@ -23,10 +23,15 @@ if [ ! -f "./documents/$SSM_JSON" ]; then
   exit 2
 fi
 
-# --- Extract Document Name from JSON ---
-DOC_NAME=$(jq -r '.name // empty' "./documents/$SSM_JSON")
+
+# Strip directory + .json suffix
+BASE_NAME=$(basename "$SSM_JSON" .json)
+
+# Prefix with WBuilder-
+DOC_NAME="WBuilder-$BASE_NAME"
+
 if [ -z "$DOC_NAME" ]; then
-  echo "ERROR: JSON file does not contain a 'name' field."
+  echo "ERROR: Could not derive document name from $SSM_JSON"
   exit 3
 fi
 
