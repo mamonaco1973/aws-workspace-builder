@@ -38,7 +38,7 @@ resource "aws_ssm_activation" "hybrid_activation" {
 # Secrets Manager - Store Activation ID + Code
 # ------------------------------------------------------------------------------
 resource "aws_secretsmanager_secret" "hybrid_activation_secret" {
-  name        = "hybrid-activation"
+  name        = "hybrid_activation"
   description = "SSM hybrid activation ID and code"
 }
 
