@@ -45,3 +45,15 @@ variable "user_base_dn" {
   default     = "CN=Users,DC=wbuilder,DC=workspaces,DC=com"
 }
 
+# --------------------------------------------------------------------------------
+# Workspace bundle for build
+# --------------------------------------------------------------------------------
+
+variable "workspace_bundle" {
+  description = "Workspace bundle for build (e.g., wsb-93xk71ss4)"
+  type        = string
+  default     = "wsb-93xk71ss4"
+}
+
+
+

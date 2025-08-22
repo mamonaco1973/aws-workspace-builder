@@ -332,6 +332,7 @@ touch "$POLICY_PATH/Machine/Scripts/scripts.ini"
 cat > "$POLICY_PATH/Machine/Scripts/Startup/ssm-bootstrap.ps1" <<'EOF'  
 $marker="C:\ProgramData\Amazon\SSM\registered.marker"
 if (-Not (Test-Path $marker)) {
+    Start-Sleep -Seconds 300
     Stop-Service AmazonSSMAgent -Force -ErrorAction SilentlyContinue
     & "C:\Program Files\Amazon\SSM\amazon-ssm-agent.exe" -register `
         -code ${ACTIVATION_CODE} `
