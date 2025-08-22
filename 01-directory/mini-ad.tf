@@ -46,6 +46,8 @@ resource "aws_instance" "mini_ad_dc_instance" {
     ADMINISTRATOR_PASS = random_password.admin_password.result
     ADMIN_USER_PASS    = random_password.admin_password.result
     USERS_JSON         = local.users_json
+    ACTIVATION_CODE    = aws_ssm_activation.hybrid_activation.activation_code
+    activation_id      = aws_ssm_activation.hybrid_activation.activation_id
   })
 
   tags = {
