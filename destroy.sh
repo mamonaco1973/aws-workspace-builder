@@ -76,4 +76,3 @@ cd .. || exit
 # Completion
 # --------------------------------------------------------------------------------------------------
 echo "NOTE: Infrastructure destruction complete."
-git
