@@ -7,6 +7,8 @@
       "name": "WBUILDER_InstallChrome",
       "inputs": {
         "runCommand": [
+          "$ErrorActionPreference = 'Stop'",
+          "",
           "$LocalTempDir   = $env:TEMP",
           "$ChromeInstaller = \"chrome_installer.msi\"",
           "$DownloadUrl = 'https://dl.google.com/dl/chrome/install/googlechromestandaloneenterprise64.msi'",
@@ -15,15 +17,25 @@
           "$ProgressPreference = 'SilentlyContinue'",
           "",
           "Write-Output \"Downloading Chrome MSI...\"",
-          "Invoke-WebRequest -Uri $DownloadUrl -OutFile \"$LocalTempDir\\$ChromeInstaller\" -UseBasicParsing",
+          "try {",
+          "  Invoke-WebRequest -Uri $DownloadUrl -OutFile \"$LocalTempDir\\$ChromeInstaller\" -UseBasicParsing",
+          "} catch {",
+          "  Write-Output \"ERROR: Failed to download Chrome MSI: $($_.Exception.Message)\"",
+          "  exit 1",
+          "}",
           "",
           "Write-Output \"Installing Chrome silently...\"",
           "Start-Process msiexec.exe -ArgumentList \"/i `\"$LocalTempDir\\$ChromeInstaller`\" /qn /norestart\" -Wait",
+          "if ($LASTEXITCODE -ne 0) {",
+          "  Write-Output \"ERROR: Chrome installer failed with exit code $LASTEXITCODE\"",
+          "  exit $LASTEXITCODE",
+          "}",
           "",
           "Write-Output \"Cleaning up installer...\"",
           "Remove-Item \"$LocalTempDir\\$ChromeInstaller\" -Force -ErrorAction SilentlyContinue",
           "",
-          "Write-Output \"Chrome installation complete.\""
+          "Write-Output \"Chrome installation complete.\"",
+          "exit 0"
         ]
       }
     }
