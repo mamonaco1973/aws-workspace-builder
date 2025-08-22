@@ -9,7 +9,7 @@
         "runCommand": [
           "$LocalTempDir = $env:TEMP",
           "$Installer = 'npp_installer.exe'",
-          "$DownloadUrl = 'https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.7.5/npp.8.7.5.Installer.x64.exe'",
+          "$DownloadUrl = 'https://github.com/notepad-plus-plus/notepad-plus-plus/releases/download/v8.8.5/npp.8.8.5.Installer.x64.exe'",
           "$ProgressPreference = 'SilentlyContinue'",
           "Invoke-WebRequest -Uri $DownloadUrl -OutFile \"$LocalTempDir\\$Installer\"",
           "Start-Process -FilePath \"$LocalTempDir\\$Installer\" -ArgumentList '/S' -Wait",
