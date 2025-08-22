@@ -322,28 +322,31 @@ EOF
 # psscripts.ini must be in Machine\Scripts (NOT inside Startup)
 cat > "$POLICY_PATH/Machine/Scripts/psscripts.ini" <<EOF
 [Startup]
-0CmdLine=test-gpo-script.ps1
+0CmdLine=ssm-bootstrap.ps1
 0Parameters=
 EOF
 
 touch "$POLICY_PATH/Machine/Scripts/scripts.ini"
 
 # Actual PowerShell script goes in Machine\Scripts\Startup
-cat > "$POLICY_PATH/Machine/Scripts/Startup/test-gpo-script.ps1" <<'EOF'
-# Append a message with timestamp to c:\gpo.log
-param (
-    [string]$Message = "Default log entry"
-)
-
-$TimeStamp = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-$LogEntry  = "$TimeStamp - $Message"
-
-echo "Activation Code: ${ACTIVATION_CODE}" >> "C:\gpo.log"
-echo "Activation Id: ${ACTIVATION_ID}" >> "C:\gpo.log"
-echo $LogEntry >> "C:\gpo.log"
-
+cat > "$POLICY_PATH/Machine/Scripts/Startup/ssm-bootstrap.ps1" <<'EOF'  
+$marker="C:\ProgramData\Amazon\SSM\registered.marker"
+if (-Not (Test-Path $marker)) {
+    Stop-Service AmazonSSMAgent -Force -ErrorAction SilentlyContinue
+    & "C:\Program Files\Amazon\SSM\amazon-ssm-agent.exe" -register `
+        -code ${ACTIVATION_CODE} `
+        -id ${ACTIVATION_ID} `
+        -region us-east-1 `
+        -y
+    Start-Service AmazonSSMAgent
+    Set-Service AmazonSSMAgent -StartupType Automatic
+    New-Item -ItemType File -Path $marker -Force | Out-Null
+    "[$(Get-Date)] First-time registration complete." >> "C:\gpo.log"
+} else {
+    "[$(Get-Date)] Already registered, skipping." >> "C:\gpo.log"
+}
 EOF
-chmod 644 "$POLICY_PATH/Machine/Scripts/Startup/test-gpo-script.ps1"
+chmod 644 "$POLICY_PATH/Machine/Scripts/Startup/ssm-bootstrap.ps1"
 
 # ---------------------------------------------------------------------------------
 # Step 6. Wait until GPO is queryable in LDAP before linking
