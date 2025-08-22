@@ -113,17 +113,29 @@ while [[ "$STATUS" == "InProgress" || "$STATUS" == "Pending" ]]; do
   echo "NOTE: Current Status = $STATUS"
 done
 
+{
+  echo "---- $(date) ----"
+  echo "[STDOUT]"
+  aws ssm get-command-invocation \
+      --command-id "$COMMAND_ID" \
+      --instance-id "$MI_ID" \
+      --region us-east-1 \
+      --query "StandardOutputContent" \
+      --output text
+  echo "[STDERR]"
+  aws ssm get-command-invocation \
+      --command-id "$COMMAND_ID" \
+      --instance-id "$MI_ID" \
+      --region us-east-1 \
+      --query "StandardErrorContent" \
+      --output text
+} > ${BASE_NAME}.log
 
 # --- Evaluate Final Status -------------------------------------------
 if [ "$STATUS" == "Success" ]; then
   echo "NOTE: Command completed successfully"
 else
   echo "WARNING: Command ended with status = $STATUS"
-  echo "NOTE: Fetching detailed output..."
-  aws ssm get-command-invocation \
-    --command-id "$COMMAND_ID" \
-    --instance-id "$MI_ID" \
-    --region us-east-1
 
   # Cleanup document even on failure.
   echo "NOTE: Deleting SSM Document $DOC_NAME ..."
@@ -133,7 +145,6 @@ else
 
   exit 5
 fi
-
 
 # --- Cleanup ----------------------------------------------------------
 # Always remove the temporary document after execution completes.
