@@ -43,10 +43,10 @@ else
 fi
 
 # --------------------------------------------------------------------------------------------------
-# Phase 2: Destroy server EC2 instances
+# Phase 2: Destroy workspace instance
 # --------------------------------------------------------------------------------------------------
-echo "NOTE: Destroying EC2 server instances..."
-cd 02-servers || { echo "ERROR: Directory 02-servers not found"; exit 1; }
+echo "NOTE: Destroying EC2 workspace instance..."
+cd 02-workspace || { echo "ERROR: Directory 02-workspace not found"; exit 1; }
 
 terraform init   # Re-initialize Terraform to ensure backend and providers are available
 terraform destroy -auto-approve   # Destroy resources without interactive approval

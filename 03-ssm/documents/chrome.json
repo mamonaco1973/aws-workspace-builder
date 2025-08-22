@@ -1,0 +1,18 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Custom SSM Document to install Chrome",
+  "mainSteps": [
+    {
+      "action": "aws:runPowerShellScript",
+      "name": "InstallChrome",
+      "inputs": {
+        "runCommand": [
+          "Write-Output 'Starting Chrome installation...'", 
+          "Invoke-WebRequest -Uri 'https://dl.google.com/chrome/install/standalonesetup64.exe' -OutFile 'C:\\Temp\\chrome_installer.exe'", 
+          "Start-Process 'C:\\Temp\\chrome_installer.exe' -ArgumentList '/silent','/install' -Wait", 
+          "Write-Output 'Chrome installation completed.'"
+        ]
+      }
+    }
+  ]
+}

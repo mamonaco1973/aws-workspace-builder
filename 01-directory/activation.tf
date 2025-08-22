@@ -30,7 +30,7 @@ resource "aws_ssm_activation" "hybrid_activation" {
   name               = "HybridActivation"
   description        = "Activation for registering on-prem or non-EC2 machines"
   iam_role           = aws_iam_role.ssm_hybrid_instance_role.name
-  registration_limit = 10   # Number of servers you can register with this activation
+  registration_limit = 1   # Number of servers you can register with this activation
   expiration_date    = timeadd(timestamp(), "720h") # optional, 30 days from now
 }
 

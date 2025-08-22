@@ -51,7 +51,7 @@ cd .. || exit
 # Phase 2: Build EC2 Server Instances
 # --------------------------------------------------------------------------------------------------
 echo "NOTE: Building EC2 server instances..."
-cd 02-servers || { echo "ERROR: Directory 02-servers not found"; exit 1; }
+cd 02-workspace || { echo "ERROR: Directory 02-workspace not found"; exit 1; }
 
 terraform init
 terraform apply -auto-approve
