@@ -113,6 +113,8 @@ while [[ "$STATUS" == "InProgress" || "$STATUS" == "Pending" ]]; do
   echo "NOTE: Current Status = $STATUS"
 done
 
+echo "NOTE: Creating log file ${BASE_NAME}.log"
+
 {
   echo "---- $(date) ----"
   echo "[STDOUT]"
