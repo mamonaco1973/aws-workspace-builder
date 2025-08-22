@@ -39,7 +39,7 @@ resource "aws_ssm_activation" "hybrid_activation" {
 # ------------------------------------------------------------------------------
 
 output "activation_id" {
-  value = aws_ssm_activation.hybrid_activation.activation_id
+  value = aws_ssm_activation.hybrid_activation.id
 }
 
 output "activation_code" {
