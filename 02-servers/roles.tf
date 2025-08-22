@@ -38,13 +38,6 @@ resource "aws_iam_policy" "secrets_policy" {
   })
 }
 
-# Attach the AmazonSSMManagedInstanceCore policy to the secrets role
-# This allows EC2 instances using this role to interact with AWS Systems Manager (SSM)
-resource "aws_iam_role_policy_attachment" "attach_ssm_policy" {
-  role       = aws_iam_role.ec2_secrets_role.name
-  policy_arn = "arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore"
-}
-
 # Attach the Secrets Manager access policy to the EC2 Secrets role
 resource "aws_iam_role_policy_attachment" "attach_secrets_policy" {
   role       = aws_iam_role.ec2_secrets_role.name
