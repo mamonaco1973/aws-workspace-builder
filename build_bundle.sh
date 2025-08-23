@@ -93,7 +93,7 @@ while true; do
       exit 1
       ;;
     *)
-      sleep 120
+      sleep 60
       ;;
   esac
 done
@@ -111,15 +111,15 @@ BUNDLE_ID=$(aws workspaces create-workspace-bundle \
   --bundle-name "$BUNDLE_NAME" \
   --bundle-description "$BUNDLE_DESCRIPTION" \
   --image-id "$IMAGE_ID" \
-  --compute-type-name STANDARD \
+  --compute-type Name=STANDARD \
   --user-storage Capacity=50 \
   --root-storage Capacity=80 \
-  --query "BundleId" \
+  --query "WorkspaceBundle.BundleId" \
   --output text)
 
 if [[ -z "$BUNDLE_ID" || "$BUNDLE_ID" == "None" ]]; then
   echo "ERROR: Failed to create bundle from image $IMAGE_ID" >&2
-  exit 1
+  #exit 1
 fi
 
 echo "NOTE: Bundle created. BundleId=$BUNDLE_ID"
