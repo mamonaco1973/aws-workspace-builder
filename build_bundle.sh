@@ -65,7 +65,7 @@ while true; do
       exit 1
       ;;
     *)
-      sleep 30
+      sleep 60
       ;;
   esac
 done
