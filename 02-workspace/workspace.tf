@@ -101,7 +101,7 @@ resource "aws_workspaces_workspace" "admin_workspace_win" {
   }
 
   tags = {
-    Name = "Admin WorkSpace" # Tag used for management visibility
+    Name = "WBuilder WorkSpace" # Tag used for management visibility
   }
 
   depends_on = [
