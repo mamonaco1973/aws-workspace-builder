@@ -24,6 +24,33 @@ fi
 echo "NOTE: Workspace for bundle build is $WORKSPACE_ID"
 
 # ----------------------------------------------------------------------
+# Step 1b. Ensure Workspace is AVAILABLE before creating an image
+# ----------------------------------------------------------------------
+echo "NOTE: Waiting for workspace $WORKSPACE_ID to become AVAILABLE..."
+while true; do
+  WS_STATUS=$(aws workspaces describe-workspaces \
+    --workspace-ids "$WORKSPACE_ID" \
+    --query "Workspaces[0].State" \
+    --output text)
+
+  echo "NOTE: Current state of workspace $WORKSPACE_ID is $WS_STATUS"
+
+  case "$WS_STATUS" in
+    AVAILABLE)
+      echo "NOTE: Workspace $WORKSPACE_ID is AVAILABLE"
+      break
+      ;;
+    ERROR|FAILED|TERMINATING|TERMINATED)
+      echo "ERROR: Workspace $WORKSPACE_ID is in state $WS_STATUS, cannot proceed" >&2
+      exit 1
+      ;;
+    *)
+      sleep 60
+      ;;
+  esac
+done
+
+# ----------------------------------------------------------------------
 # Step 2. Create image from Workspace
 # ----------------------------------------------------------------------
 IMAGE_NAME="wbuilder-image-$(date +%Y%m%d%H%M%S)"
