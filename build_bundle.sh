@@ -1,5 +1,6 @@
 #!/bin/bash
 set -euo pipefail
+export AWS_DEFAULT_REGION="us-east-1"   # AWS region for all resources
 
 # ----------------------------------------------------------------------
 # Step 1. Find Workspace by tag
