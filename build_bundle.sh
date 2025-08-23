@@ -28,7 +28,7 @@ echo "NOTE: Workspace for bundle build is $WORKSPACE_ID"
 IMAGE_NAME="wbuilder-image-$(date +%Y%m%d%H%M%S)"
 IMAGE_DESCRIPTION="Image created from workspace $WORKSPACE_ID"
 
-echo "NOTE: Creating image '$IMAGE_NAME' from workspace $WORKSPACE_ID ..."
+echo "NOTE: Creating image '$IMAGE_NAME' from workspace ${WORKSPACE_ID}..."
 IMAGE_ID=$(aws workspaces create-workspace-image \
   --workspace-id "$WORKSPACE_ID" \
   --name "$IMAGE_NAME" \
@@ -46,18 +46,18 @@ echo "NOTE: Image creation started. ImageId=$IMAGE_ID"
 # ----------------------------------------------------------------------
 # Step 3. Poll until image is ready
 # ----------------------------------------------------------------------
-echo "NOTE: Waiting for image $IMAGE_ID to become AVAILABLE ..."
+echo "NOTE: Waiting for image $IMAGE_ID to become AVAILABLE..."
 while true; do
   STATUS=$(aws workspaces describe-workspace-images \
     --image-ids "$IMAGE_ID" \
     --query "Images[0].State" \
     --output text)
 
-  echo "STATUS: $STATUS"
+  echo "NOTE: Status of image $IMAGE_ID is $STATUS"
 
   case "$STATUS" in
     AVAILABLE)
-      echo "SUCCESS: Image $IMAGE_ID is now AVAILABLE"
+      echo "NOTE: Image $IMAGE_ID is now AVAILABLE"
       break
       ;;
     ERROR|FAILED)
@@ -70,3 +70,28 @@ while true; do
   esac
 done
 
+# ----------------------------------------------------------------------
+# Step 4. Create bundle from the image
+# ----------------------------------------------------------------------
+
+BUNDLE_NAME="wbuilder-bundle-$(date +%Y%m%d%H%M%S)"
+BUNDLE_DESCRIPTION="Bundle created from image $IMAGE_ID"
+
+echo "NOTE: Creating bundle $BUNDLE_NAME from image $IMAGE_ID ..."
+
+BUNDLE_ID=$(aws workspaces create-workspace-bundle \
+  --bundle-name "$BUNDLE_NAME" \
+  --bundle-description "$BUNDLE_DESCRIPTION" \
+  --image-id "$IMAGE_ID" \
+  --compute-type-name STANDARD \
+  --user-storage Capacity=50 \
+  --root-storage Capacity=80 \
+  --query "BundleId" \
+  --output text)
+
+if [[ -z "$BUNDLE_ID" || "$BUNDLE_ID" == "None" ]]; then
+  echo "ERROR: Failed to create bundle from image $IMAGE_ID" >&2
+  exit 1
+fi
+
+echo "NOTE: Bundle created. BundleId=$BUNDLE_ID"
