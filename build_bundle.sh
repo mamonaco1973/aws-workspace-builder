@@ -135,7 +135,7 @@ BUNDLE_ID=$(aws workspaces create-workspace-bundle \
 
 if [[ -z "$BUNDLE_ID" || "$BUNDLE_ID" == "None" ]]; then
   echo "ERROR: Failed to create bundle from image $IMAGE_ID" >&2
-  #exit 1
+  exit 1
 fi
 
 echo "NOTE: Bundle created. BundleId=$BUNDLE_ID"
