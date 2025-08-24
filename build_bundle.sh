@@ -24,7 +24,21 @@ fi
 echo "NOTE: Workspace for bundle build is $WORKSPACE_ID"
 
 # ----------------------------------------------------------------------
-# Step 1b. Ensure Workspace is AVAILABLE before creating an image
+# Step 2. Reboot the WorkSpace after all installs have completed.
+# ----------------------------------------------------------------------
+echo "NOTE: Rebooting WorkSpace $WORKSPACE_ID ..."
+aws workspaces reboot-workspaces \
+  --reboot-workspace-requests WorkspaceId=$WORKSPACE_ID
+
+if [[ $? -ne 0 ]]; then
+  echo "ERROR: Failed to reboot WorkSpace $WORKSPACE_ID" >&2
+  exit 1
+fi
+
+echo "NOTE: Reboot command issued successfully."
+
+# ----------------------------------------------------------------------
+# Step 3. Ensure Workspace is AVAILABLE before creating an image
 # ----------------------------------------------------------------------
 echo "NOTE: Waiting for workspace $WORKSPACE_ID to become AVAILABLE..."
 while true; do
@@ -51,7 +65,7 @@ while true; do
 done
 
 # ----------------------------------------------------------------------
-# Step 2. Create image from Workspace
+# Step 4. Create image from Workspace
 # ----------------------------------------------------------------------
 IMAGE_NAME="wbuilder-image-$(date +%Y%m%d%H%M%S)"
 IMAGE_DESCRIPTION="Image created from workspace $WORKSPACE_ID"
@@ -72,7 +86,7 @@ fi
 echo "NOTE: Image creation started. ImageId=$IMAGE_ID"
 
 # ----------------------------------------------------------------------
-# Step 3. Poll until image is ready
+# Step 5. Poll until image is ready
 # ----------------------------------------------------------------------
 echo "NOTE: Waiting for image $IMAGE_ID to become AVAILABLE..."
 while true; do
@@ -99,7 +113,7 @@ while true; do
 done
 
 # ----------------------------------------------------------------------
-# Step 4. Create bundle from the image
+# Step 6. Create bundle from the image
 # ----------------------------------------------------------------------
 
 BUNDLE_NAME="wbuilder-bundle-$(date +%Y%m%d%H%M%S)"
