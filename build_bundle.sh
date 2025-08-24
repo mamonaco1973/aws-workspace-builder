@@ -27,15 +27,16 @@ echo "NOTE: Workspace for bundle build is $WORKSPACE_ID"
 # Step 2. Reboot the WorkSpace after all installs have completed.
 # ----------------------------------------------------------------------
 echo "NOTE: Rebooting WorkSpace $WORKSPACE_ID ..."
-aws workspaces reboot-workspaces \
-  --reboot-workspace-requests "[{\"WorkspaceId\":\"$WORKSPACE_ID\"}]"
+$STATUS=$(aws workspaces reboot-workspaces \
+  --reboot-workspace-requests "[{\"WorkspaceId\":\"$WORKSPACE_ID\"}]")
 
 if [[ $? -ne 0 ]]; then
+  echo $STATUS
   echo "ERROR: Failed to reboot WorkSpace $WORKSPACE_ID" >&2
   exit 1
 fi
 
-sleep 10
+sleep 60  # There is pretty big delay in the status update
 echo "NOTE: Reboot command issued successfully."
 
 # ----------------------------------------------------------------------
