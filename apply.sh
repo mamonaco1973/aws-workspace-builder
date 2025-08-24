@@ -1,29 +1,39 @@
 #!/bin/bash
 # --------------------------------------------------------------------------------------------------
 # Description:
-# This script provisions infrastructure in two main phases:
-#   1. Deploys the Active Directory (AD) instance and ensures it is fully initialized.
-#   2. Deploys additional EC2 servers that depend on the AD environment.
+#   End-to-end automation script for provisioning and validating an AWS-backed
+#   Workspace environment. The workflow is executed in sequential phases:
+#
+#     Phase 1: Deploy Active Directory (AD) instance.
+#     Phase 2: Deploy Workspace resources dependent on AD.
+#     Phase 3: Wait for SSM Agent activation on the Workspace.
+#     Phase 4: Run post-provisioning installs via SSM.
+#     Phase 5: Capture a golden image and create a Workspace bundle.
+#     Phase 6: Run final validation checks.
 #
 # Key Features:
-#   - Validates the environment with a pre-check script before provisioning.
-#   - Creates an SSM Parameter to track AD initialization status.
-#   - Polls SSM Parameter Store until the AD Domain Controller signals readiness.
-#   - Applies Terraform modules for both AD and server layers.
-#   - Runs a validation script at the end to confirm the build.
+#   - Performs environment pre-checks before provisioning.
+#   - Uses Terraform modules for infrastructure deployment.
+#   - Waits for AD initialization and SSM agent readiness.
+#   - Automates software installation on the Workspace.
+#   - Produces a validated, bundled image for reuse.
 #
-# REQUIREMENTS:
-#   - AWS CLI configured with appropriate credentials/permissions.
-#   - Terraform installed and accessible in PATH.
-#   - `check_env.sh` script present in the current directory.
-#   - `validate.sh` script present in the current directory.
+# Requirements:
+#   - AWS CLI configured with valid credentials/permissions.
+#   - Terraform installed and available in PATH.
+#   - Scripts present in working directory:
+#       * check_env.sh    (pre-flight validation)
+#       * ssm-wait.sh     (poll for SSM activation)
+#       * ssm-build.sh    (SSM-driven installs)
+#       * build_bundle.sh (image + bundle creation)
+#       * validate.sh     (final verification)
 # --------------------------------------------------------------------------------------------------
 
 # --------------------------------------------------------------------------------------------------
-# Configuration
+# Global Configuration
 # --------------------------------------------------------------------------------------------------
-export AWS_DEFAULT_REGION="us-east-1"   # AWS region for all resources
-DNS_ZONE="mcloud.mikecloud.com"         # Active Directory DNS zone / domain
+export AWS_DEFAULT_REGION="us-east-1"   # Target AWS region
+DNS_ZONE="mcloud.mikecloud.com"         # AD DNS zone / domain name
 
 # --------------------------------------------------------------------------------------------------
 # Environment Pre-Check
@@ -36,10 +46,9 @@ if [ $? -ne 0 ]; then
 fi
 
 # --------------------------------------------------------------------------------------------------
-# Phase 1: Build AD Instance
+# Phase 1: Deploy Active Directory
 # --------------------------------------------------------------------------------------------------
-echo "NOTE: Building Active Directory instance..."
-
+echo "NOTE: Deploying Active Directory..."
 cd 01-directory || { echo "ERROR: Directory 01-directory not found"; exit 1; }
 
 terraform init
@@ -48,9 +57,9 @@ terraform apply -auto-approve
 cd .. || exit
 
 # --------------------------------------------------------------------------------------------------
-# Phase 2: Build Workspace 
-# ---------------------------------------`-----------------------------------------------------------
-echo "NOTE: Building Workspace..."
+# Phase 2: Deploy Workspace
+# --------------------------------------------------------------------------------------------------
+echo "NOTE: Deploying Workspace..."
 cd 02-workspace || { echo "ERROR: Directory 02-workspace not found"; exit 1; }
 
 terraform init
@@ -59,26 +68,23 @@ terraform apply -auto-approve
 cd .. || exit
 
 # --------------------------------------------------------------------------------------------------
-# Phase 3: Wait for SSM to become active
+# Phase 3: Wait for SSM Agent Activation
 # --------------------------------------------------------------------------------------------------
-
 ./ssm-wait.sh
 
 # --------------------------------------------------------------------------------------------------
-# Phase 4: Run installs on activate workspace
+# Phase 4: Run Post-Provisioning Installs
 # --------------------------------------------------------------------------------------------------
 cd 03-ssm || { echo "ERROR: Directory 03-ssm not found"; exit 1; }
 ./ssm-build.sh
 cd ..
 
 # --------------------------------------------------------------------------------------------------
-# Phase 5: Display final validation message   
+# Phase 5: Capture Image & Create Bundle
 # --------------------------------------------------------------------------------------------------
-
-./validate.sh
-
-# --------------------------------------------------------------------------------------------------
-# Phase 6: Take an image and create the bundle
-# --------------------------------------------------------------------------------------------------
-
 ./build_bundle.sh
+
+# --------------------------------------------------------------------------------------------------
+# Phase 6: Run Final Validation
+# --------------------------------------------------------------------------------------------------
+./validate.sh
