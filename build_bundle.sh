@@ -27,7 +27,7 @@ echo "NOTE: Workspace for bundle build is $WORKSPACE_ID"
 # Step 2. Reboot the WorkSpace after all installs have completed.
 # ----------------------------------------------------------------------
 echo "NOTE: Rebooting WorkSpace $WORKSPACE_ID ..."
-$STATUS=$(aws workspaces reboot-workspaces \
+STATUS=$(aws workspaces reboot-workspaces \
   --reboot-workspace-requests "[{\"WorkspaceId\":\"$WORKSPACE_ID\"}]")
 
 if [[ $? -ne 0 ]]; then
