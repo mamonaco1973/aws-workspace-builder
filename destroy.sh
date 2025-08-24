@@ -34,12 +34,12 @@ MI_ID=$(aws ssm describe-instance-information \
     --output text | xargs)
 
 if [[ -n "$MI_ID" ]]; then
-  echo "WARNING: Found Managed Instance $MI_ID for ActivationId=$ACTIVATION_ID"
+  echo "NOTE: Found Managed Instance $MI_ID for ActivationId=$ACTIVATION_ID"
   echo "NOTE: Deregistering $MI_ID ..."
   aws ssm deregister-managed-instance --instance-id "$MI_ID" --region us-east-1
   echo "NOTE: $MI_ID has been deregistered."
 else
-  echo "NOTE: No Managed Instance found for ActivationId=$ACTIVATION_ID"
+  echo "WARNING: No Managed Instance found for ActivationId=$ACTIVATION_ID"
 fi
 
 # --------------------------------------------------------------------------------------------------
