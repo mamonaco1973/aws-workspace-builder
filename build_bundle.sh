@@ -28,7 +28,7 @@ echo "NOTE: Workspace for bundle build is $WORKSPACE_ID"
 # ----------------------------------------------------------------------
 echo "NOTE: Rebooting WorkSpace $WORKSPACE_ID ..."
 aws workspaces reboot-workspaces \
-  --reboot-workspace-requests WorkspaceId=$WORKSPACE_ID
+  --reboot-workspace-requests "[{\"WorkspaceId\":\"$WORKSPACE_ID\"}]"
 
 if [[ $? -ne 0 ]]; then
   echo "ERROR: Failed to reboot WorkSpace $WORKSPACE_ID" >&2
