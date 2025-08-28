@@ -1,0 +1,27 @@
+{
+  "schemaVersion": "2.2",
+  "description": "Install Active Directory and RSAT tools on Windows Server 2022",
+  "mainSteps": [
+    {
+      "action": "aws:runPowerShellScript",
+      "name": "InstallADTools",
+      "inputs": {
+        "runCommand": [
+          "$ErrorActionPreference = 'Stop'",
+          "",
+          "Write-Output 'Installing Active Directory and RSAT tools...'",
+          "",
+          "try {",
+          "  Install-WindowsFeature -Name GPMC,RSAT-AD-PowerShell,RSAT-AD-AdminCenter,RSAT-ADDS-Tools -IncludeAllSubFeature -IncludeManagementTools -ErrorAction Stop",
+          "  Write-Output 'Active Directory and RSAT tools installation complete.'",
+          "} catch {",
+          "  Write-Output \"ERROR: Installation failed: $($_.Exception.Message)\"",
+          "  exit 1",
+          "}",
+          "",
+          "exit 0"
+        ]
+      }
+    }
+  ]
+}

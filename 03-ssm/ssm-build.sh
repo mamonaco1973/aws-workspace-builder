@@ -58,6 +58,14 @@ echo "NOTE: Using Managed Instance ID: $MI_ID"
 # Enable "exit immediately" on error to ensure reliability.
 set -e
 
+# Execute AD tools SSM document.
+
+./ssm-execute.sh "$MI_ID" "adtools.json"
+
+# Reboot after this step and wait for it to come back online
+
+./wsreboot.sh
+
 # Execute Chrome installation SSM document.
 ./ssm-execute.sh "$MI_ID" "chrome.json"
 
