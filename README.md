@@ -91,6 +91,7 @@ aws-workspace-builder-main/
 * [An AWS Account](https://aws.amazon.com/console/)
 * [Install AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html) 
 * [Install Latest Terraform](https://developer.hashicorp.com/terraform/install)
+* [Install a Workspaces Client](https://clients.amazonworkspaces.com/)
 
 If this is your first time watching our content, we recommend starting with this video: [AWS + Terraform: Easy Setup](https://youtu.be/BCMQo0CB9wk). It provides a step-by-step guide to properly configure Terraform, Packer, and the AWS CLI.  
 
@@ -133,4 +134,71 @@ should now work.
 ## Build Results
 
 
-## Add an install to the Build
+## Demo
+
+In this demo, we will:
+
+1. Log in to the `Admin` workspace.  
+2. Create a new SSM JSON document to install [7-Zip](https://www.7-zip.org).  
+
+
+```json
+{
+  "schemaVersion": "2.2",
+  "description": "Download and silently install 7-Zip",
+  "mainSteps": [
+    {
+      "action": "aws:runPowerShellScript",
+      "name": "Install7Zip",
+      "inputs": {
+        "runCommand": [
+          "$ErrorActionPreference = 'Stop'",
+          "",
+          "$LocalTempDir = $env:TEMP",
+          "$Installer   = '7z_installer.exe'",
+          "$DownloadUrl = 'https://www.7-zip.org/a/7z2301-x64.exe'",
+          "",
+          "# Disable progress bar for faster/silent download",
+          "$ProgressPreference = 'SilentlyContinue'",
+          "",
+          "Write-Output 'Downloading 7-Zip installer...'",
+          "try {",
+          "  Invoke-WebRequest -Uri $DownloadUrl -OutFile \"$LocalTempDir\\$Installer\" -UseBasicParsing",
+          "} catch {",
+          "  Write-Output \"ERROR: Failed to download 7-Zip: $($_.Exception.Message)\"",
+          "  exit 1",
+          "}",
+          "",
+          "Write-Output 'Installing 7-Zip silently...'",
+          "try {",
+          "  Start-Process -FilePath \"$LocalTempDir\\$Installer\" -ArgumentList '/S' -Wait -NoNewWindow",
+          "} catch {",
+          "  Write-Output \"ERROR: Failed to install 7-Zip: $($_.Exception.Message)\"",
+          "  exit 1",
+          "}",
+          "",
+          "Write-Output '7-Zip installation complete.'"
+        ]
+      }
+    }
+  ]
+}
+```
+
+3. Execute the SSM document to deploy 7-Zip.  
+4. Review the execution logs in the Systems Manager console.  
+5. Validate from the workspace that 7-Zip was successfully 
+
+## Project Teardown and Artifacts
+
+To tear down the project, run the `destroy.sh` script. This script removes only the **Workspace Builder infrastructure** that was created for the demo or proof-of-concept environment. It does **not** delete the **AWS WorkSpaces Image** and **Bundle** that were generated during the build process.
+
+The **Image** and **Bundle** are the primary build artifacts of Workspace Builder. They represent a fully configured WorkSpace environment, including any installed software, customizations, and baseline configuration captured during the build. Unlike the supporting infrastructure, these artifacts are persistent and reusable.
+
+Once created, you can:
+
+- **Share** the Image and Bundle with other AWS accounts  
+- **Copy** them to other AWS regions for multi-region deployments  
+- **Deploy** them into your production environment, integrated with your existing Active Directory  
+
+This separation allows you to treat the Image and Bundle as durable, production-ready outputs, while the supporting infrastructure can be created and destroyed as needed for testing, validation, and updates.
