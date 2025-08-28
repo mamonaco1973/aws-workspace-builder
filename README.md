@@ -191,7 +191,7 @@ In this demo, we will:
 
 ## Project Teardown and Artifacts
 
-To tear down the project, run the `destroy.sh` script. This script removes only the **Workspace Builder infrastructure** that was created for the demo or proof-of-concept environment. It does **not** delete the **AWS WorkSpaces Image** and **Bundle** that were generated during the build process.
+To tear down the project, run the `destroy.sh` script. This script removes only the **Workspace Builder infrastructure** that was used to create the **Image**. It does **not** delete the **AWS WorkSpaces Image** and **Bundle** that were generated during the build process.
 
 The **Image** and **Bundle** are the primary build artifacts of Workspace Builder. They represent a fully configured WorkSpace environment, including any installed software, customizations, and baseline configuration captured during the build. Unlike the supporting infrastructure, these artifacts are persistent and reusable.
 
