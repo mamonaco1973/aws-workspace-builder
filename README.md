@@ -187,7 +187,7 @@ In this demo, we will:
 
 3. Execute the SSM document to deploy 7-Zip.  
 4. Review the execution logs in the Systems Manager console.  
-5. Validate from the workspace that 7-Zip was successfully 
+5. Validate from the workspace that 7-Zip was successfully installed.
 
 ## Project Teardown and Artifacts
 
