@@ -130,9 +130,27 @@ any changes that are required for your infrastructure. All Terraform commands
 should now work.
 ```
 
-
 ## Build Results
 
+When this project is applied, it provisions the following AWS resources and artifacts:
+
+- **Active Directory Environment (01-directory)**
+  - Minimal AD deployment (“mini-ad”) with supporting roles
+  - VPC networking for directory integration
+  - Security groups, IAM roles, and activation resources
+  - Automation scripts for directory setup
+
+- **WorkSpaces Environment (02-workspace)**
+  - WorkSpaces directory connector
+  - Workspace definitions and configuration
+  - Variables to parameterize bundles and user assignments
+
+- **Systems Manager Integration (03-ssm)**
+  - Pre-built SSM documents for automated software installation:
+    - `adtools.json` – installs Active Directory tools  
+    - `chrome.json` – installs Google Chrome  
+    - `npp.json` – installs Notepad++  
+  - Shell scripts to build, execute, and manage SSM automation against WorkSpaces
 
 ## Demo
 
